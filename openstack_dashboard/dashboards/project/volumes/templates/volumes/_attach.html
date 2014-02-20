@@ -7,7 +7,7 @@
 {% block form_class %}{{ block.super }} horizontal {% if show_attach %}split_half{% else %} no_split{% endif %}{% endblock %}
 
 {% block modal_id %}attach_volume_modal{% endblock %}
-{% block modal-header %}{% trans "Manage Volume Attachments" %}{% endblock %}
+{% block modal-header %}{% trans "Manage Volume Attachments: " %}{{volume.display_name}}{% endblock %}
 
 {% block modal-body %}
     {% if show_attach %}

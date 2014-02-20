@@ -6,7 +6,7 @@
 {% block form_action %}{% url "horizon:project:instances:rebuild" instance_id %}{% endblock %}
 
 {% block modal_id %}rebuild_instance_modal{% endblock %}
-{% block modal-header %}{% trans "Rebuild Instance" %}{% endblock %}
+{% block modal-header %}{% trans "Rebuild Instance: " %}{{instance.name }}{% endblock %}
 
 {% block modal-body %}
 <div class="left">

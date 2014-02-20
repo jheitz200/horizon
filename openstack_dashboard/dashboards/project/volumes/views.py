@@ -177,6 +177,7 @@ class CreateSnapshotView(forms.ModalFormView):
         context['volume_id'] = self.kwargs['volume_id']
         try:
             volume = cinder.volume_get(self.request, context['volume_id'])
+            context["display_name"] = volume.display_name
             if (volume.status == 'in-use'):
                 context['attached'] = True
                 context['form'].set_warning(_("This volume is currently "
