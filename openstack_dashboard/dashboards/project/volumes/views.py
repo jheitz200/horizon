@@ -172,12 +172,22 @@ class CreateSnapshotView(forms.ModalFormView):
     template_name = 'project/volumes/create_snapshot.html'
     success_url = reverse_lazy("horizon:project:images_and_snapshots:index")
 
+    def get_object(self):
+        if not hasattr(self, "_object"):
+            volume_id = self.kwargs['volume_id']
+            try:
+                self._object = cinder.volume_get(self.request, volume_id)
+            except Exception:
+                self._object = None
+                exceptions.handle(self.request,
+                                  _('Unable to retrieve volume information.'))
+        return self._object
+
     def get_context_data(self, **kwargs):
         context = super(CreateSnapshotView, self).get_context_data(**kwargs)
         context['volume_id'] = self.kwargs['volume_id']
         try:
-            volume = cinder.volume_get(self.request, context['volume_id'])
-            context["display_name"] = volume.display_name
+            volume = self.get_object()
             if (volume.status == 'in-use'):
                 context['attached'] = True
                 context['form'].set_warning(_("This volume is currently "
@@ -193,7 +203,9 @@ class CreateSnapshotView(forms.ModalFormView):
         return context
 
     def get_initial(self):
-        return {'volume_id': self.kwargs["volume_id"]}
+        volume = self.get_object()
+        return {'volume_id': self.kwargs["volume_id"],
+                     'volume_name': volume.display_name}
 
 
 class UpdateView(forms.ModalFormView):

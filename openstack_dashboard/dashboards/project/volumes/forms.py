@@ -435,6 +435,11 @@ class AttachForm(forms.SelfHandlingForm):
 
 
 class CreateSnapshotForm(forms.SelfHandlingForm):
+    volume_name = forms.CharField(label=_("Volume Name"),
+                           required=False,
+                           widget=forms.TextInput(
+                               attrs={'readonly': 'readonly'}
+                           ))
     name = forms.CharField(max_length="255", label=_("Snapshot Name"))
     description = forms.CharField(widget=forms.Textarea,
             label=_("Description"), required=False)

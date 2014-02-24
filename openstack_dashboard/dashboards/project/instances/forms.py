@@ -36,6 +36,10 @@ def _image_choice_title(img):
 
 
 class RebuildInstanceForm(forms.SelfHandlingForm):
+    name = forms.CharField(label=_("Name"),
+            required=False,
+            widget=forms.TextInput(
+                attrs={'readonly': 'readonly'}))
     instance_id = forms.CharField(widget=forms.HiddenInput())
     image = forms.ChoiceField(label=_("Select Image"),
             widget=fields.SelectWidget(attrs={'class': 'image-selector'},
@@ -54,6 +58,8 @@ class RebuildInstanceForm(forms.SelfHandlingForm):
         super(RebuildInstanceForm, self).__init__(request, *args, **kwargs)
         instance_id = kwargs.get('initial', {}).get('instance_id')
         self.fields['instance_id'].initial = instance_id
+        instance = api.nova.server_get(self.request, instance_id)
+        self.fields['name'].initial = instance.name
 
         images = utils.get_available_images(request, request.user.tenant_id)
         choices = [(image.id, image) for image in images]

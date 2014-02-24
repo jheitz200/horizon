@@ -28,6 +28,11 @@ from openstack_dashboard import api
 
 
 class SetFlavorChoiceAction(workflows.Action):
+    name = forms.CharField(label=_("Name"),
+                                required=False,
+                                widget=forms.TextInput(
+                                    attrs={'readonly': 'readonly'}
+                                ))
     old_flavor_id = forms.CharField(required=False, widget=forms.HiddenInput())
     old_flavor_name = forms.CharField(label=_("Old Flavor"),
                                  required=False,
