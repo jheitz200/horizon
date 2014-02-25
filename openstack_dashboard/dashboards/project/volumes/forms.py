@@ -506,6 +506,7 @@ class UpdateForm(forms.SelfHandlingForm):
 
 class ExtendForm(forms.SelfHandlingForm):
     name = forms.CharField(label=_("Volume Name"),
+                           required=False,
                            widget=forms.TextInput(
                                attrs={'readonly': 'readonly'}
                            ))

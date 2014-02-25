@@ -305,9 +305,6 @@ class AttachedInstanceColumn(tables.Column):
 
 
 class AttachmentsTable(tables.DataTable):
-    volume_name = tables.Column("volume_name",
-                         verbose_name=_("Volume Name"),
-                         link="horizon:project:volumes:detail")
     instance = AttachedInstanceColumn(get_attachment_name,
                                       verbose_name=_("Instance"))
     device = tables.Column("device",
