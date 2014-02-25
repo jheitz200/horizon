@@ -360,6 +360,11 @@ class CreateForm(forms.SelfHandlingForm):
 
 
 class AttachForm(forms.SelfHandlingForm):
+    volume_name = forms.CharField(label=_("Volume Name"),
+                                    required=False,
+                                    widget=forms.TextInput(
+                                        attrs={'readonly': 'readonly'}
+                                    ))
     instance = forms.ChoiceField(label=_("Attach to Instance"),
                                  help_text=_("Select an instance to "
                                              "attach to."))
@@ -388,6 +393,7 @@ class AttachForm(forms.SelfHandlingForm):
             volume_id = None
         self.fields['volume_id'] = forms.CharField(widget=forms.HiddenInput(),
                                                    initial=volume_id)
+        self.fields['volume_name'].initial = volume.display_name
 
         # Populate instance choices
         instance_list = kwargs.get('initial', {}).get('instances', [])
