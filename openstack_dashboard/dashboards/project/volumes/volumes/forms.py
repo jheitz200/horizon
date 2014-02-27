@@ -360,6 +360,10 @@ class CreateForm(forms.SelfHandlingForm):
 
 
 class AttachForm(forms.SelfHandlingForm):
+    volume_name = forms.CharField(label=_("Volume Name"),
+                                  equired=False,
+                                  widget=forms.TextInput(
+                                      attrs={'readonly': 'readonly'}))
     instance = forms.ChoiceField(label=_("Attach to Instance"),
                                  help_text=_("Select an instance to "
                                              "attach to."))
@@ -380,7 +384,7 @@ class AttachForm(forms.SelfHandlingForm):
             self.fields['device'].widget = forms.widgets.HiddenInput()
             self.fields['device'].required = False
 
-        # populate volume_id
+        # populate volume_id and volume_name
         volume = kwargs.get('initial', {}).get("volume", None)
         if volume:
             volume_id = volume.id
@@ -388,6 +392,7 @@ class AttachForm(forms.SelfHandlingForm):
             volume_id = None
         self.fields['volume_id'] = forms.CharField(widget=forms.HiddenInput(),
                                                    initial=volume_id)
+        self.fields['volume_name'].initial = volume.display_name
 
         # Populate instance choices
         instance_list = kwargs.get('initial', {}).get('instances', [])
@@ -435,6 +440,10 @@ class AttachForm(forms.SelfHandlingForm):
 
 
 class CreateSnapshotForm(forms.SelfHandlingForm):
+    volume_name = forms.CharField(label=_("Volume Name"),
+                                  required=False,
+                                  widget=forms.TextInput(
+                                      attrs={'readonly': 'readonly'}))
     name = forms.CharField(max_length="255", label=_("Snapshot Name"))
     description = forms.CharField(widget=forms.Textarea,
             label=_("Description"), required=False)
@@ -442,10 +451,12 @@ class CreateSnapshotForm(forms.SelfHandlingForm):
     def __init__(self, request, *args, **kwargs):
         super(CreateSnapshotForm, self).__init__(request, *args, **kwargs)
 
-        # populate volume_id
+        # populate volume_id and volume_name
         volume_id = kwargs.get('initial', {}).get('volume_id', [])
+        volume = cinder.volume_get(request, volume_id)
         self.fields['volume_id'] = forms.CharField(widget=forms.HiddenInput(),
                                                    initial=volume_id)
+        self.fields['volume_name'].initial = volume.display_name
 
     def handle(self, request, data):
         try:
@@ -495,9 +506,9 @@ class UpdateForm(forms.SelfHandlingForm):
 
 class ExtendForm(forms.SelfHandlingForm):
     name = forms.CharField(label=_("Volume Name"),
+                           required=False,
                            widget=forms.TextInput(
-                               attrs={'readonly': 'readonly'}
-                           ))
+                               attrs={'readonly': 'readonly'}))
     new_size = forms.IntegerField(min_value=1, label=_("Size (GB)"))
 
     def clean(self):
