@@ -29,19 +29,29 @@ from openstack_dashboard import api
 
 
 class CreateSnapshot(forms.SelfHandlingForm):
+    instance_name = forms.CharField(label=_("Instance Name"),
+                                    required=False,
+                                    widget=forms.TextInput(
+                                        attrs={'readonly': 'readonly'}))
     instance_id = forms.CharField(label=_("Instance ID"),
                                   widget=forms.HiddenInput(),
                                   required=False)
     name = forms.CharField(max_length="255", label=_("Snapshot Name"))
+
+    def __init__(self, request, *args, **kwargs):
+        super(CreateSnapshot, self).__init__(request, *args, **kwargs)
+
+        # populate instance_id and instance_name
+        instance_id = kwargs.get('initial', {}).get('instance_id')
+        instance = api.nova.server_get(request, instance_id)
+        self.fields['instance_name'].initial = instance.name
 
     def handle(self, request, data):
         try:
             snapshot = api.nova.snapshot_create(request,
                                                 data['instance_id'],
                                                 data['name'])
-            # NOTE(gabriel): This API call is only to display a pretty name.
-            instance = api.nova.server_get(request, data['instance_id'])
-            vals = {"name": data['name'], "inst": instance.name}
+            vals = {"name": data['name'], "inst": data['instance_name']}
             messages.success(request, _('Snapshot "%(name)s" created for '
                                         'instance "%(inst)s"') % vals)
             return snapshot

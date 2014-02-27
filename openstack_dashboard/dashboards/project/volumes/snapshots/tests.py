@@ -38,6 +38,8 @@ class VolumeSnapshotsViewTests(test.TestCase):
         volume = self.cinder_volumes.first()
         cinder.volume_get(IsA(http.HttpRequest), volume.id) \
             .AndReturn(volume)
+        cinder.volume_get(IsA(http.HttpRequest), volume.id) \
+            .AndReturn(volume)
         usage_limit = {'maxTotalVolumeGigabytes': 250,
                        'gigabytesUsed': 20,
                        'volumesUsed': len(self.cinder_volumes.list()),
@@ -61,6 +63,8 @@ class VolumeSnapshotsViewTests(test.TestCase):
 
         cinder.volume_get(IsA(http.HttpRequest), volume.id) \
             .AndReturn(volume)
+        cinder.volume_get(IsA(http.HttpRequest), volume.id) \
+            .AndReturn(volume)
         cinder.volume_snapshot_create(IsA(http.HttpRequest),
                                       volume.id,
                                       snapshot.name,
@@ -72,6 +76,7 @@ class VolumeSnapshotsViewTests(test.TestCase):
         formData = {'method': 'CreateSnapshotForm',
                     'tenant_id': self.tenant.id,
                     'volume_id': volume.id,
+                    'volume_name': volume.name,
                     'name': snapshot.name,
                     'description': snapshot.description}
         url = reverse('horizon:project:volumes:volumes:create_snapshot',
@@ -87,6 +92,8 @@ class VolumeSnapshotsViewTests(test.TestCase):
 
         cinder.volume_get(IsA(http.HttpRequest), volume.id) \
             .AndReturn(volume)
+        cinder.volume_get(IsA(http.HttpRequest), volume.id) \
+            .AndReturn(volume)
         cinder.volume_snapshot_create(IsA(http.HttpRequest),
                                       volume.id,
                                       snapshot.name,
@@ -98,6 +105,7 @@ class VolumeSnapshotsViewTests(test.TestCase):
         formData = {'method': 'CreateSnapshotForm',
                     'tenant_id': self.tenant.id,
                     'volume_id': volume.id,
+                    'volume_name': volume.name,
                     'name': snapshot.name,
                     'description': snapshot.description}
         url = reverse('horizon:project:volumes:volumes:create_snapshot',
