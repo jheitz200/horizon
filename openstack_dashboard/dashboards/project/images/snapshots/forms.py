@@ -26,7 +26,7 @@ from horizon import forms
 from horizon import messages
 
 from openstack_dashboard import api
-
+import pdb
 
 class CreateSnapshot(forms.SelfHandlingForm):
     instance_name = forms.CharField(label=_("Instance Name"),
@@ -51,9 +51,7 @@ class CreateSnapshot(forms.SelfHandlingForm):
             snapshot = api.nova.snapshot_create(request,
                                                 data['instance_id'],
                                                 data['name'])
-            # NOTE(gabriel): This API call is only to display a pretty name.
-            instance = api.nova.server_get(request, data['instance_id'])
-            vals = {"name": data['name'], "inst": instance.name}
+            vals = {"name": data['name'], "inst": data['instance_name']}
             messages.success(request, _('Snapshot "%(name)s" created for '
                                         'instance "%(inst)s"') % vals)
             return snapshot

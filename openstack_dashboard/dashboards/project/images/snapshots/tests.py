@@ -25,7 +25,7 @@ from mox import IsA  # noqa
 
 from openstack_dashboard import api
 from openstack_dashboard.test import helpers as test
-
+import pdb
 
 INDEX_URL = reverse('horizon:project:images:index')
 
@@ -69,6 +69,7 @@ class SnapshotsViewTests(test.TestCase):
 
         formData = {'method': 'CreateSnapshot',
                     'tenant_id': self.tenant.id,
+                    'instance_name': server.name,
                     'instance_id': server.id,
                     'name': snapshot.name}
         url = reverse('horizon:project:images:snapshots:create',
@@ -83,12 +84,14 @@ class SnapshotsViewTests(test.TestCase):
 
         self.mox.StubOutWithMock(api.nova, 'server_get')
         self.mox.StubOutWithMock(api.nova, 'snapshot_create')
+        api.nova.server_get(IsA(http.HttpRequest), server.id).AndReturn(server)
         api.nova.snapshot_create(IsA(http.HttpRequest), server.id,
                                  snapshot.name).AndRaise(self.exceptions.nova)
         self.mox.ReplayAll()
 
         formData = {'method': 'CreateSnapshot',
                     'tenant_id': self.tenant.id,
+                    'instance_name': server.name,
                     'instance_id': server.id,
                     'name': snapshot.name}
         url = reverse('horizon:project:images:snapshots:create',

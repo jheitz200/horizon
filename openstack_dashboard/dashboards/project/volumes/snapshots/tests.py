@@ -72,6 +72,7 @@ class VolumeSnapshotsViewTests(test.TestCase):
         formData = {'method': 'CreateSnapshotForm',
                     'tenant_id': self.tenant.id,
                     'volume_id': volume.id,
+                    'volume_name': volume.name,
                     'name': snapshot.display_name,
                     'description': snapshot.display_description}
         url = reverse('horizon:project:volumes:volumes:create_snapshot',
@@ -98,6 +99,7 @@ class VolumeSnapshotsViewTests(test.TestCase):
         formData = {'method': 'CreateSnapshotForm',
                     'tenant_id': self.tenant.id,
                     'volume_id': volume.id,
+                    'volume_name': volume.name,
                     'name': snapshot.display_name,
                     'description': snapshot.display_description}
         url = reverse('horizon:project:volumes:volumes:create_snapshot',

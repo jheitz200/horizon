@@ -361,7 +361,7 @@ class CreateForm(forms.SelfHandlingForm):
 
 class AttachForm(forms.SelfHandlingForm):
     volume_name = forms.CharField(label=_("Volume Name"),
-                                  equired=False,
+                                  required=False,
                                   widget=forms.TextInput(
                                       attrs={'readonly': 'readonly'}))
     instance = forms.ChoiceField(label=_("Attach to Instance"),

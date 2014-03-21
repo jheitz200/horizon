@@ -866,19 +866,16 @@ class InstanceTests(test.TestCase):
         self.assertRedirectsNoFollow(res, INDEX_URL)
 
     @test.create_stubs({api.nova: ('server_get',
-                                   'snapshot_create',
-                                   'server_list',
-                                   'flavor_list',
-                                   'server_delete'),
+                                   'snapshot_create',),
                         api.glance: ('image_list_detailed',)})
     def test_create_instance_snapshot(self):
         server = self.servers.first()
+        snapshot = self.snapshots.first()
 
         api.nova.server_get(IsA(http.HttpRequest), server.id).AndReturn(server)
         api.nova.snapshot_create(IsA(http.HttpRequest),
                                  server.id,
-                                 "snapshot1").AndReturn(self.snapshots.first())
-
+                                 "snapshot1").AndReturn(snapshot)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        marker=None).AndReturn([[], False])
 
@@ -886,6 +883,7 @@ class InstanceTests(test.TestCase):
 
         formData = {'instance_id': server.id,
                     'method': 'CreateSnapshot',
+                    'instance_name': server.name,
                     'name': 'snapshot1'}
         url = reverse('horizon:project:images:snapshots:create',
                       args=[server.id])
@@ -2373,9 +2371,12 @@ class InstanceTests(test.TestCase):
         res = self._instance_resize_post(server.id, flavor.id)
         self.assertRedirectsNoFollow(res, INDEX_URL)
 
-    @test.create_stubs({api.glance: ('image_list_detailed',)})
+    @test.create_stubs({api.glance: ('image_list_detailed',),
+                        api.nova: ('server_get',)})
     def test_rebuild_instance_get(self, expect_password_fields=True):
         server = self.servers.first()
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+                .AndReturn(server)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        filters={'is_public': True,
                                                 'status': 'active'}) \
@@ -2416,7 +2417,8 @@ class InstanceTests(test.TestCase):
         return self.client.post(url, form_data)
 
     instance_rebuild_post_stubs = {
-        api.nova: ('server_rebuild',),
+        api.nova: ('server_rebuild',
+                 'server_get',),
         api.glance: ('image_list_detailed',)}
 
     @test.create_stubs(instance_rebuild_post_stubs)
@@ -2425,6 +2427,8 @@ class InstanceTests(test.TestCase):
         image = self.images.first()
         password = u'testpass'
 
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+                .AndReturn(server)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        filters={'is_public': True,
                                                 'status': 'active'}) \
@@ -2451,6 +2455,8 @@ class InstanceTests(test.TestCase):
         server = self.servers.first()
         image = self.images.first()
 
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+                .AndReturn(server)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        filters={'is_public': True,
                                                 'status': 'active'}) \
@@ -2478,6 +2484,8 @@ class InstanceTests(test.TestCase):
         pass1 = u'somepass'
         pass2 = u'notsomepass'
 
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+                .AndReturn(server)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        filters={'is_public': True,
                                                 'status': 'active'}) \
@@ -2499,6 +2507,8 @@ class InstanceTests(test.TestCase):
         server = self.servers.first()
         image = self.images.first()
 
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+                .AndReturn(server)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        filters={'is_public': True,
                                                 'status': 'active'}) \
@@ -2526,6 +2536,8 @@ class InstanceTests(test.TestCase):
         image = self.images.first()
         password = u'testpass'
 
+        api.nova.server_get(IsA(http.HttpRequest), server.id) \
+                .AndReturn(server)
         api.glance.image_list_detailed(IsA(http.HttpRequest),
                                        filters={'is_public': True,
                                                 'status': 'active'}) \
